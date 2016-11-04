@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2016
 """
 Extends django.utils.dateformat
+
+# TODO Describe custom formats
 """
 
 
@@ -13,6 +15,10 @@ from django.utils.dateformat import DateFormat, re_escaped
 from django.utils.formats import get_format
 from django.utils.encoding import force_text
 from django.utils.translation import get_language, ugettext_lazy as _
+
+
+# TODO Get DEFAULT_VARIANT from settings
+DEFAULT_VARIANT = 'SHORT'
 
 
 # Adding "q"
@@ -60,13 +66,13 @@ def date_format(value, format=None, use_l10n=None):
 
 def _normalize_variant(variant):
     if variant.lower() not in ('short', 'long', ''):
-        variant = 'short'
+        variant = DEFAULT_VARIANT
     if variant and not variant.endswith("_"):
         variant = variant + "_"
     return variant.upper()
 
 
-def format_date_range(from_date, to_date, variant='short'):
+def format_date_range(from_date, to_date, variant=DEFAULT_VARIANT):
     """
     >>> import datetime
     >>> format_date_range(datetime.date(2009,1,15), datetime.date(2009,1,20))
@@ -112,7 +118,7 @@ def format_date_range(from_date, to_date, variant='short'):
         return separator.join((f, t))
 
 
-def format_time_range(from_time, to_time, variant='short'):
+def format_time_range(from_time, to_time, variant=DEFAULT_VARIANT):
     """
     Knows how to deal with left out from_time/to_time values.
     """
@@ -136,7 +142,7 @@ def format_time_range(from_time, to_time, variant='short'):
         return separator.join((f, t))
 
 
-def format_timespan_range(timespan_object, force_wholeday=False, variant='short'):
+def format_timespan_range(timespan_object, force_wholeday=False, variant=DEFAULT_VARIANT):
     """
     For Timespan-objects, i.e. object with start_date, end_date, start_time and end_time properties.
 
@@ -178,21 +184,7 @@ def format_timespan_range(timespan_object, force_wholeday=False, variant='short'
     return rv
 
 
-def format_partial_date(year=None, month=None, day=None, variant='short'):
-    """
-    >>> format_partial_date(2008)
-    2008
-    >>> format_partial_date(2008, 3)
-    2008
-    >>> format_partial_date(2008)
-    2008
-    >>> format_partial_date(2008)
-    2008
-    >>> format_partial_date(2008)
-    2008
-    >>> format_partial_date(2008)
-    2008
-    """
+def format_partial_date(year=None, month=None, day=None, variant=DEFAULT_VARIANT):
     if year and month and day:
         format_name = 'DATE_FORMAT'
     elif year and month:
