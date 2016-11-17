@@ -99,9 +99,8 @@ def format_date_range(from_date, to_date, variant=DEFAULT_VARIANT):
     to_date = datetime_to_date(to_date)
 
     from_format = to_format = get_format(variant + 'DATE_FORMAT')
-
     if from_date == to_date or not to_date:
-        return date_format(from_date, get_format(from_format))
+        return date_format(from_date, from_format)
     else:
         if (from_date.year == to_date.year):
             from_format = get_format(variant + 'DAYMONTH_FORMAT') or 'd/m/'
