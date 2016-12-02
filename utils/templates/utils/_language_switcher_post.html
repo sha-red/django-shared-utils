@@ -1,0 +1,50 @@
+{% load i18n %}
+
+		{% get_language_info_list for LANGUAGES as languages %}
+
+		{% for language in languages %}
+			{% if request.LANGUAGE_CODE != language.code %}
+				<form class="language-switch" action="{% url 'set_language' %}" method="post">
+					{% csrf_token %}
+					<input name="next" type="hidden" value="{{ redirect_to }}">
+					<input name="language" type="hidden" value="{{ language.code }}">
+					<button type="submit">{{ language.name_local }}</button>
+				</form>
+			{% else %}
+				<span class="selected-language">{{ language.name_local }}</span>
+			{% endif %}
+			{% if not forloop.last %}{{ separator|default:"/" }}{% endif %}
+		{% endfor %}
+
+
+		{% comment %}
+			// Language Switcher
+
+			form.language-switch {
+				display: inline;
+				margin: 0;
+				padding: 0;
+			}
+
+			form.language-switch button {
+				margin: 0;
+				padding: 0;
+				border: none;
+				background: none;
+
+				@include interactive-underline;
+			}
+
+			html {
+				.selected-language { color: $active_color; }
+
+				&:lang(de) {
+					a.language-switch[hreflang=en] { @include interactive-underline; }
+				}
+
+				&:lang(en) {
+					a.language-switch[hreflang=de] { @include interactive-underline; }
+				}
+			}
+
+		{% endcomment %}

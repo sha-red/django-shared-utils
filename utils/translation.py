@@ -8,12 +8,13 @@ from django import http
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
 from django.core.urlresolvers import translate_url
+from django.http import HttpResponseRedirect
 from django.template.loader import select_template
 from django.utils import translation
-from django.views.generic import TemplateView
-from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.utils.http import is_safe_url
-from django.http import HttpResponseRedirect
+from django.utils.six.moves.urllib.parse import urlsplit, urlunsplit
+from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
+from django.views.generic import TemplateView
 from django.views.i18n import LANGUAGE_QUERY_PARAMETER
 
 
@@ -168,9 +169,10 @@ def active_language(lang='de'):
     translation.deactivate()
 
 
-def set_language(request):
+def set_language_get(request):
     """
-    Modified copy from django.views.i18n
+    set_language per GET request,
+    modified copy from django.views.i18n (django 1.9.x)
     """
     next = request.POST.get('next', request.GET.get('next'))
     if not is_safe_url(url=next, host=request.get_host()):
