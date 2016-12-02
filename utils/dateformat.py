@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2016
 """
 Extends django.utils.dateformat
+Adds date and time range functions
 
 # TODO Describe custom formats
 """
@@ -17,8 +18,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import get_language, ugettext_lazy as _
 
 
-# TODO Get DEFAULT_VARIANT from settings
-DEFAULT_VARIANT = 'SHORT'
+DEFAULT_VARIANT = getattr(settings, 'DEFAULT_DATE_VARIANT', 'SHORT')
 
 
 # Adding "q"
