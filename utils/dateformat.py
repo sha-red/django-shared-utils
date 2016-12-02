@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2016
 """
 Extends django.utils.dateformat
+Adds date and time range functions
 
 # TODO Describe custom formats
 """
@@ -17,8 +18,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import get_language, ugettext_lazy as _
 
 
-# TODO Get DEFAULT_VARIANT from settings
-DEFAULT_VARIANT = 'SHORT'
+DEFAULT_VARIANT = getattr(settings, 'DEFAULT_DATE_VARIANT', 'SHORT')
 
 
 # Adding "q"
@@ -99,9 +99,8 @@ def format_date_range(from_date, to_date, variant=DEFAULT_VARIANT):
     to_date = datetime_to_date(to_date)
 
     from_format = to_format = get_format(variant + 'DATE_FORMAT')
-
     if from_date == to_date or not to_date:
-        return date_format(from_date, get_format(from_format))
+        return date_format(from_date, from_format)
     else:
         if (from_date.year == to_date.year):
             from_format = get_format(variant + 'DAYMONTH_FORMAT') or 'd/m/'

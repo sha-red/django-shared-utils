@@ -1,0 +1,29 @@
+{% load i18n translation_tags %}
+
+		{% get_language_info_list for LANGUAGES as languages %}
+
+		{% for language in languages %}
+			{% if request.LANGUAGE_CODE != language.code %}
+				<a class="language-switch" rel="alternate" hreflang="de" href="{% url 'set_language' %}?language={{ language.code }}">{{ language.name_local }}</a>
+			{% else %}
+				<span class="selected-language">{{ language.name_local }}</span>
+			{% endif %}
+			{% if not forloop.last %}{{ separator|default:"/" }}{% endif %}
+		{% endfor %}
+
+
+		{% comment %}
+			// Language Switcher
+
+			html {
+				.selected-language { color: $active_color; }
+
+				&:lang(de) {
+					a.language-switch[hreflang=en] { @include interactive-underline; }
+				}
+
+				&:lang(en) {
+					a.language-switch[hreflang=de] { @include interactive-underline; }
+				}
+			}
+		{% endcomment %}
