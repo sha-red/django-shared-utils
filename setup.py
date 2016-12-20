@@ -25,7 +25,6 @@ setup(
         exclude=['tests', 'testapp'],
     ),
     include_package_data=True,
-    package_data={'utils': ['templates/*']},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
