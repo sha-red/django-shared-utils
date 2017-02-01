@@ -6,6 +6,7 @@ Extends django.utils.dateformat
 Adds date and time range functions
 
 # TODO Describe custom formats
+# TODO Use Django's names 'MONTH_DAY_FORMAT' and 'YEAR_MONTH_FORMAT'
 """
 
 
@@ -173,7 +174,7 @@ def format_timespan_range(timespan_object, force_wholeday=False, variant=DEFAULT
     if (timespan_object.is_multiday() or
        not timespan_object.start_time or
        force_wholeday):
-        # Don't show timespan
+        # Don't show times
         return rv
     else:
         rv = _("%(daterange)s %(timespan)s Uhr") % {
