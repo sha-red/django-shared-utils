@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2016
-#            Initially based on https://djangosnippets.org/snippets/1405/
+# Erik Stein <code@classlibrary.net>, 2016-2017
+
 
 from django import template
+from django.conf import settings
 from .. import dateformat
 
 
-# TODO Get DEFAULT_VARIANT from settings
-DEFAULT_VARIANT = 'SHORT'
+DEFAULT_VARIANT = getattr(settings, 'DATEFORMAT_DEFAULT_VARIANT', 'SHORT')
 
 
 register = template.Library()
@@ -38,5 +38,15 @@ def format_time_range(from_time, to_time, variant=DEFAULT_VARIANT):
     return dateformat.format_time_range(from_time, to_time, variant)
 
 
+@register.simple_tag
 def format_timespan_range(timespan_object, force_wholeday=False, variant=DEFAULT_VARIANT):
     return dateformat.format_timespan_range(timespan_object, force_wholeday, variant)
+
+
+@register.simple_tag
+def format_year_range(start_date, end_date, variant=DEFAULT_VARIANT):
+    """
+    Returns a range with only the years, i.e. either a single year or
+    e.g. "2015-2017".
+    """
+    return dateformat.format_year_range(start_date, end_date, variant=DEFAULT_VARIANT)

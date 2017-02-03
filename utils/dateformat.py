@@ -6,7 +6,7 @@ Extends django.utils.dateformat
 Adds date and time range functions
 
 # TODO Describe custom formats
-# TODO Use Django's names 'MONTH_DAY_FORMAT' and 'YEAR_MONTH_FORMAT'
+# TODO Use Django's names 'MONTH_DAY_FORMAT' and 'YEAR_MONTH_FORMAT', with "_"
 """
 
 
@@ -118,6 +118,23 @@ def format_date_range(from_date, to_date, variant=DEFAULT_VARIANT):
         return separator.join((f, t))
 
 
+def format_year_range(start_date, end_date, variant=DEFAULT_VARIANT):
+    """
+    Returns a range with only the years, i.e. either a single year or
+    e.g. "2015-2017".
+    """
+    start_year = start_date.year
+    start_year_formatted = format_partial_date(year=start_year, variant=variant)
+    end_year = end_date.year
+    if end_year != start_year:
+        end_year_formatted = format_partial_date(year=end_year, variant=variant)
+
+        separator = get_format('DATE_RANGE_SEPARATOR') or " - "
+        return separator.join((start_year_formatted, end_year_formatted))
+    else:
+        return start_year_formatted
+
+
 def format_time_range(from_time, to_time, variant=DEFAULT_VARIANT):
     """
     Knows how to deal with left out from_time/to_time values.
@@ -184,27 +201,50 @@ def format_timespan_range(timespan_object, force_wholeday=False, variant=DEFAULT
     return rv
 
 
-def format_partial_date(year=None, month=None, day=None, variant=DEFAULT_VARIANT):
+def format_partial_date(year=None, month=None, day=None, variant=DEFAULT_VARIANT, use_l10n=None):
     if year and month and day:
         format_name = 'DATE_FORMAT'
     elif year and month:
-        format_name = 'YEARMONTH_FORMAT'
+        format_name = 'YEAR_MONTH_FORMAT'
     elif month and day:
-        format_name = 'DAYMONTH_FORMAT'
+        format_name = 'DAY_MONTH_FORMAT'
     elif year:
         format_name = 'YEAR_FORMAT'
     elif month:
         format_name = 'MONTH_FORMAT'
     elif day:
-        format_name = 'DAYONLY_FORMAT'
+        format_name = 'DAY_FORMAT'
+    else:
+        return ""
 
     name = _normalize_variant(variant) + format_name
     # TODO Django bug or what? Sometimes get_language returns None, therefore force a language here
-    partial_date_format = get_format(name, lang=get_language() or settings.LANGUAGE_CODE)
+    partial_date_format = get_format(name, use_l10n=use_l10n)  # , lang=get_language() or settings.LANGUAGE_CODE)
     return date_format(datetime.date(year or 2000, month or 1, day or 1), partial_date_format)
 
 
 # TODO Add format_partial_date_range function
+# def format_partial_date_range(
+#         start_year=None, start_month=None, start_day=None,
+#         end_year=None, end_month=None, end_day=None,
+#         variant=DEFAULT_VARIANT):
+#     if start_year and start_month and start_day:
+#         format_name = 'DATE_FORMAT'
+#     elif start_year and start_month:
+#         format_name = 'YEARMONTH_FORMAT'
+#     elif start_month and start_day:
+#         format_name = 'DAYMONTH_FORMAT'
+#     elif start_year:
+#         format_name = 'YEAR_FORMAT'
+#     elif start_month:
+#         format_name = 'MONTH_FORMAT'
+#     elif start_day:
+#         format_name = 'DAYONLY_FORMAT'
+
+#     name = _normalize_variant(variant) + format_name
+#     # TODO Django bug or what? Sometimes get_language returns None, therefore force a language here
+#     partial_date_format = get_format(name, lang=get_language() or settings.LANGUAGE_CODE)
+#     return date_format(datetime.date(start_year or 2000, start_month or 1, start_day or 1), partial_date_format)
 
 
 def _test():
