@@ -18,23 +18,29 @@ from django.views.generic import TemplateView
 from django.views.i18n import LANGUAGE_QUERY_PARAMETER
 
 
+def _normalize_language_code(language_code):
+    """
+    Makes sure language code is not an empty string.
+    """
+    return (
+        language_code or
+        translation.get_language() or
+        settings.LANGUAGE_CODE or
+        'en'
+    )
+
+
 def get_language(language_code=None):
-    """
-    Calls Django's translation.get_language but makes sure
-    that
-    """
-    if not language_code:
-        language_code = translation.get_language()
-    if not language_code:
-        language_code = settings.LANGUAGE_CODE
-    language_code = language_code[:2] or 'de'  # FIXME Fall back to default language
+    return _normalize_language_code(language_code)[:2]
+
 
 def lang_suffix(language_code=None):
     """
     Returns the suffix appropriate for adding to field names for selecting
     the current language.
     """
-    return "_%s" % language_code
+    language_code = _normalize_language_code(language_code)[:2]
+    return "_{}".format(language_code)
 
 
 class DirectTemplateView(TemplateView):
@@ -67,10 +73,11 @@ def i18n_direct_to_template(request, *args, **kwargs):
 
 
 def get_translation(obj, relation_name='translations', language_code=None):
-    language_code = language_code or translation.get_language()[:2]
+    language_code = _normalize_language_code(language_code)[:2]
     try:
         return getattr(obj, relation_name).get(language=language_code)
     except ObjectDoesNotExist:
+        # FIXME Fetch best possible language from settings.LANGUAGES
         try:
             return getattr(obj, relation_name).get(language=(language_code == 'en' and 'de' or 'en'))
         except ObjectDoesNotExist:
@@ -135,9 +142,7 @@ def get_translated_field(obj, field_name, language_code=None):
             field_name + lang_suffix other language
     """
     # TODO Implement multiple languages
-    language_code = (language_code or
-            translation.get_language() or
-            settings.LANGUAGE_CODE)[:2]
+    language_code = _normalize_language_code(language_code)[:2]
     is_default_language = bool(language_code == settings.LANGUAGE_CODE[:2])
     if language_code == 'de':
         other_language_code = 'en'
