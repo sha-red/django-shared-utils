@@ -39,4 +39,3 @@ def nbsp(text, autoescape=True):
     else:
         esc = lambda x: x
     return mark_safe(WHITESPACE.sub('&nbsp;', esc(text.strip())))
-

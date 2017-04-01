@@ -18,16 +18,22 @@ from django.views.generic import TemplateView
 from django.views.i18n import LANGUAGE_QUERY_PARAMETER
 
 
-def lang_suffix(language_code=None):
+def get_language(language_code=None):
     """
-    Returns the suffix appropriate for adding to field names for selecting
-    the current language.
+    Calls Django's translation.get_language but makes sure
+    that
     """
     if not language_code:
         language_code = translation.get_language()
     if not language_code:
         language_code = settings.LANGUAGE_CODE
     language_code = language_code[:2] or 'de'  # FIXME Fall back to default language
+
+def lang_suffix(language_code=None):
+    """
+    Returns the suffix appropriate for adding to field names for selecting
+    the current language.
+    """
     return "_%s" % language_code
 
 
