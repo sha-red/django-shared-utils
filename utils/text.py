@@ -23,7 +23,6 @@ downgrade = allow_lazy(downgrade, six.text_type, SafeText)
 
 
 def slugify_long(value):
-    value = force_text(value)
     return slugify(downgrade(value))
 slugify_long = allow_lazy(slugify_long, six.text_type, SafeText)
 
@@ -46,4 +45,3 @@ def slugify_german(value):
     umap = {ord(key): unicode(val) for key, val in umlaute.items()}
     return slugify(value.translate(umap))
 slugify_german = allow_lazy(slugify_german, six.text_type, SafeText)
-
