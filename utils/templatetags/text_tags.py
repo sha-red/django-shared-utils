@@ -9,6 +9,8 @@ from django.template.defaultfilters import stringfilter
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
+from .. import text as text_utils
+
 
 register = template.Library()
 
@@ -39,3 +41,9 @@ def nbsp(text, autoescape=True):
     else:
         esc = lambda x: x
     return mark_safe(WHITESPACE.sub('&nbsp;', esc(text.strip())))
+
+
+@register.filter(needs_autoescape=False)
+@stringfilter
+def html_entities_to_unicode(text):
+    return mark_safe(text_utils.html_entities_to_unicode(text))

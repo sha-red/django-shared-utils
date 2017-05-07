@@ -18,6 +18,9 @@ from django.views.generic import TemplateView
 from django.views.i18n import LANGUAGE_QUERY_PARAMETER
 
 
+FALLBACK_LANGUAGE_CODE = getattr(settings, 'FALLBACK_LANGUAGE_CODE', 'en')
+
+
 def _normalize_language_code(language_code):
     """
     Makes sure language code is not an empty string.
@@ -26,7 +29,7 @@ def _normalize_language_code(language_code):
         language_code or
         translation.get_language() or
         settings.LANGUAGE_CODE or
-        'en'
+        FALLBACK_LANGUAGE_CODE
     )
 
 

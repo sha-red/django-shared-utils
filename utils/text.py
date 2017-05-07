@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2015
+# Erik Stein <code@classlibrary.net>, 2015-2017
 
 from django.utils.text import slugify
 from django.utils import six
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, smart_text
 from django.utils.functional import allow_lazy
 from django.utils.safestring import SafeText
 
-# import unicodedata
-import translitcodec
+from BeautifulSoup import BeautifulStoneSoup
+import translitcodec  # provides 'translit/long', used by codecs.encode()
 import codecs
 
 
@@ -27,21 +27,11 @@ def slugify_long(value):
 slugify_long = allow_lazy(slugify_long, six.text_type, SafeText)
 
 
-def slugify_german(value):
-    """
-    Transliterates Umlaute before calling django's slugify function.
-    """
-    umlaute = {
-        'Ä': 'Ae',
-        'Ö': 'Oe',
-        'Ü': 'Ue',
-        'ä': 'ae',
-        'ö': 'oe',
-        'ü': 'ue',
-        'ß': 'ss',
-    }
+# Spreading umlauts is included in the translit/long codec.
+slugify_german = slugify_long
 
-    value = force_text(value)
-    umap = {ord(key): unicode(val) for key, val in umlaute.items()}
-    return slugify(value.translate(umap))
-slugify_german = allow_lazy(slugify_german, six.text_type, SafeText)
+
+def html_entities_to_unicode(html):
+    text = smart_text(BeautifulStoneSoup(html, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
+    return text
+html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
