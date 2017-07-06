@@ -8,7 +8,7 @@ from django.utils.encoding import force_text, smart_text
 from django.utils.functional import allow_lazy
 from django.utils.safestring import SafeText
 
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 import translitcodec  # provides 'translit/long', used by codecs.encode()
 import codecs
 

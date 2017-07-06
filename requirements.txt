@@ -1,4 +1,4 @@
 django<2
 python-dateutil
-beautifulsoup
+beautifulsoup4
 translitcodec
