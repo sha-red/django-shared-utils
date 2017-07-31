@@ -1,0 +1,9 @@
+{% load i18n %}
+{# List of items, where items have a (potentially empty) get_absolute_url and a name attribute #}
+
+	{% for item in items %}
+		{% if forloop.last and forloop.counter > 1 %}{% trans "und" %}{% endif %}
+		{% with item.get_absolute_url as url %}
+			{% if url %}<a href="{{ url }}">{% endif %}{{ item.name }}{% if url %}</a>{% endif %}{% if not forloop.last %}{% if forloop.revcounter0 > 1 %},{% endif %}{% endif %}
+		{% endwith %}
+	{% endfor %}
