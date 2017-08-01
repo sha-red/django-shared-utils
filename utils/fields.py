@@ -4,9 +4,12 @@ from __future__ import unicode_literals
 
 import re
 from django.db.models import fields
-from django.template.defaultfilters import slugify
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
+if six.PY3:
+    from functools import reduce
 
+from .text import slugify_long as slugify
 from . import SLUG_HELP
 
 
@@ -76,4 +79,5 @@ class AutoSlugField(fields.SlugField):
         if self.unique_slug:
             return unique_slug(model_instance, self.name, value, max_length=self.max_length)
         else:
-            return super(AutoSlugField, self).pre_save(model_instance, add)
+            return slugify(value)
+
