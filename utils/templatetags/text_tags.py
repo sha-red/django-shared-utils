@@ -6,6 +6,7 @@ import re
 
 from django import template
 from django.template.defaultfilters import stringfilter
+from django.utils.encoding import force_text
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
@@ -21,7 +22,7 @@ def conditional_punctuation(value, punctuation=",", space=" "):
     Appends punctuation if the (stripped) value is not empty
     and the value does not already end in a punctuation mark (.,:;!?).
     """
-    value = value.strip()
+    value = force_text(value or "").strip()
     if value:
         if value[-1] not in ".,:;!?":
             value += conditional_escape(punctuation)
