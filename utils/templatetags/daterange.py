@@ -50,3 +50,8 @@ def format_year_range(start_date, end_date, variant=DEFAULT_VARIANT):
     e.g. "2015-2017".
     """
     return dateformat.format_year_range(start_date, end_date, variant=DEFAULT_VARIANT)
+
+
+@register.simple_tag
+def format_partial_date(year=None, month=None, day=None, variant=DEFAULT_VARIANT):
+    return dateformat.format_partial_date(year, month, day, variant=DEFAULT_VARIANT)
