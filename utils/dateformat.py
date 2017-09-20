@@ -16,7 +16,12 @@ from django.conf import settings
 from django.utils.dateformat import DateFormat, re_escaped
 from django.utils.formats import get_format
 from django.utils.encoding import force_text
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
+
+# All get_format call make sure that there is a language code returned
+# (our get_language at least returns FALLBACK_LANGUAGE_CODE), because self-defined
+# translation does not work without it
+from .translation import get_language
 
 
 DEFAULT_VARIANT = getattr(settings, 'DEFAULT_DATE_VARIANT', 'SHORT')
@@ -57,12 +62,12 @@ def format(value, format):
 def time_format(value, format=None, use_l10n=None):
     # Copy of django.utils.dateformat.time_format, using our extended formatter
     tf = ExtendedFormat(value)
-    return tf.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n))
+    return tf.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n, lang=get_language()))
 
 
 def date_format(value, format=None, use_l10n=None):
     df = ExtendedFormat(value)
-    return df.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n))
+    return df.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n, lang=get_language()))
 
 
 def _normalize_variant(variant):
@@ -99,22 +104,22 @@ def format_date_range(from_date, to_date, variant=DEFAULT_VARIANT):
     from_date = datetime_to_date(from_date)
     to_date = datetime_to_date(to_date)
 
-    from_format = to_format = get_format(variant + 'DATE_FORMAT')
+    from_format = to_format = get_format(variant + 'DATE_FORMAT', lang=get_language())
     if from_date == to_date or not to_date:
         return date_format(from_date, from_format)
     else:
         if (from_date.year == to_date.year):
-            from_format = get_format(variant + 'DAYMONTH_FORMAT') or 'd/m/'
+            from_format = get_format(variant + 'DAYMONTH_FORMAT', lang=get_language()) or 'd/m/'
             if (from_date.month == to_date.month):
-                from_format = get_format(variant + 'DAYONLY_FORMAT') or 'd'
+                from_format = get_format(variant + 'DAYONLY_FORMAT', lang=get_language()) or 'd'
 
         f = t = ""
         if from_date:
-            f = date_format(from_date, get_format(from_format))
+            f = date_format(from_date, get_format(from_format), lang=get_language())
         if to_date:
-            t = date_format(to_date, get_format(to_format))
+            t = date_format(to_date, get_format(to_format), lang=get_language())
 
-        separator = get_format('DATE_RANGE_SEPARATOR') or " - "
+        separator = get_format('DATE_RANGE_SEPARATOR', lang=get_language()) or " - "
         return separator.join((f, t))
 
 
@@ -129,7 +134,7 @@ def format_year_range(start_date, end_date, variant=DEFAULT_VARIANT):
     if end_year != start_year:
         end_year_formatted = format_partial_date(year=end_year, variant=variant)
 
-        separator = get_format('DATE_RANGE_SEPARATOR') or " - "
+        separator = get_format('DATE_RANGE_SEPARATOR', lang=get_language()) or " - "
         return separator.join((start_year_formatted, end_year_formatted))
     else:
         return start_year_formatted
@@ -144,18 +149,18 @@ def format_time_range(from_time, to_time, variant=DEFAULT_VARIANT):
 
     variant = _normalize_variant(variant)
 
-    from_format = to_format = "q"  # get_format(variant + 'TIME_FORMAT')
+    from_format = to_format = "q"  # get_format(variant + 'TIME_FORMAT', lang=get_language())
 
     if from_time == to_time or not to_time:
-        return time_format(from_time, get_format(from_format))
+        return time_format(from_time, get_format(from_format), lang=get_language())
     else:
         f = t = ""
         if from_time:
-            f = time_format(from_time, get_format(from_format))
+            f = time_format(from_time, get_format(from_format), lang=get_language())
         if to_time:
-            t = time_format(to_time, get_format(to_format))
+            t = time_format(to_time, get_format(to_format), lang=get_language())
 
-        separator = get_format('DATE_RANGE_SEPARATOR') or "–"
+        separator = get_format('DATE_RANGE_SEPARATOR', lang=get_language()) or "–"
         return separator.join((f, t))
 
 
@@ -218,8 +223,7 @@ def format_partial_date(year=None, month=None, day=None, variant=DEFAULT_VARIANT
         return ""
 
     name = _normalize_variant(variant) + format_name
-    # TODO Django bug or what? Sometimes get_language returns None, therefore force a language here
-    partial_date_format = get_format(name, use_l10n=use_l10n)  # , lang=get_language() or settings.LANGUAGE_CODE)
+    partial_date_format = get_format(name, use_l10n=use_l10n, lang=get_language())
     return date_format(datetime.date(year or 2000, month or 1, day or 1), partial_date_format)
 
 
