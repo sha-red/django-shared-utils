@@ -23,7 +23,7 @@ FALLBACK_LANGUAGE_CODE = getattr(settings, 'FALLBACK_LANGUAGE_CODE', 'en')
 
 def _normalize_language_code(language_code):
     """
-    Makes sure language code is not an empty string.
+    Makes sure the language code is not an empty string.
     """
     return (
         language_code or
