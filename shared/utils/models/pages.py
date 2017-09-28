@@ -7,9 +7,9 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.text import normalize_newlines
 from django.utils.translation import ugettext_lazy as _
-from utils.functional import firstof
 
 from ..fields import AutoSlugField
+from ..functional import firstof
 
 
 # TODO Use translatable fields by default

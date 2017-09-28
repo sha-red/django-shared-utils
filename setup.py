@@ -13,11 +13,11 @@ def read(filename):
 
 setup(
     name='django-shared-utils',
-    version=__import__('utils').__version__,
+    version=__import__('shared').__version__,
     description=' Mix of Python and Django utility functions, classed etc.',
     long_description=read('README.md'),
     author='Erik Stein',
-    author_email='code@classlibrary.net',
+    author_email='erik@classlibrary.net',
     url='https://projects.c--y.net/erik/django-shared-utils/',
     license='MIT License',
     platforms=['OS Independent'],
@@ -25,6 +25,12 @@ setup(
         exclude=['tests', 'testapp'],
     ),
     include_package_data=True,
+    install_requires=[
+        # 'django<2', commented out to make `pip install -U` easier
+        'python-dateutil',
+        'beautifulsoup4',
+        'translitcodec',
+    ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
