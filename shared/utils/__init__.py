@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2007-2016
 
-VERSION = (0, 2, 1)
-__version__ = '.'.join(map(str, VERSION))
+__version__ = '0.2.1'
+VERSION = tuple(int(d) for d in __version__.split('.'))
 
 
 try:

@@ -4,7 +4,12 @@ from io import open
 import os
 from setuptools import setup, find_packages
 
-import shared.utils
+
+def get_version(prefix):
+    import re
+    with open(os.path.join(prefix, '__init__.py')) as fd:
+        metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", fd.read()))
+    return metadata['version']
 
 
 def read(filename):
@@ -15,7 +20,7 @@ def read(filename):
 
 setup(
     name='django-shared-utils',
-    version=shared.utils.__version__,
+    version=get_version('shared/utils'),
     description=' Mix of Python and Django utility functions, classed etc.',
     long_description=read('README.md'),
     author='Erik Stein',
