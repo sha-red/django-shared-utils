@@ -1,2 +1,1 @@
-VERSION = (0, 2, 1)
-__version__ = '.'.join(map(str, VERSION))
+__import__('pkg_resources').declare_namespace(__name__)

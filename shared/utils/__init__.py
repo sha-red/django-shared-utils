@@ -2,6 +2,9 @@
 from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2007-2016
 
+VERSION = (0, 2, 1)
+__version__ = '.'.join(map(str, VERSION))
+
 
 try:
     from django.utils.translation import ugettext_lazy as _

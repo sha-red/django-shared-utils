@@ -4,6 +4,8 @@ from io import open
 import os
 from setuptools import setup, find_packages
 
+import shared.utils
+
 
 def read(filename):
     path = os.path.join(os.path.dirname(__file__), filename)
@@ -13,7 +15,7 @@ def read(filename):
 
 setup(
     name='django-shared-utils',
-    version=__import__('shared').__version__,
+    version=shared.utils.__version__,
     description=' Mix of Python and Django utility functions, classed etc.',
     long_description=read('README.md'),
     author='Erik Stein',
@@ -24,6 +26,7 @@ setup(
     packages=find_packages(
         exclude=['tests', 'testapp'],
     ),
+    namespace_packages=['shared'],
     include_package_data=True,
     install_requires=[
         # 'django<2', commented out to make `pip install -U` easier
