@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2015-2017
 
+import html
+
 from django.utils import six
 from django.utils.encoding import force_text, smart_text
 from django.utils.functional import allow_lazy, keep_lazy_text
@@ -32,14 +34,20 @@ slugify_long = allow_lazy(slugify_long, six.text_type, SafeText)
 slugify_german = slugify_long
 
 
-def html_entities_to_unicode(html):
-    text = smart_text(BeautifulStoneSoup(html, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
-    return text
+# Does not work anymore with bs4
+# def html_entities_to_unicode(html):
+#     text = smart_text(BeautifulStoneSoup(html, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
+#     return text
+
+# Works only with Python >= 3.4
+def html_entities_to_unicode(html_str):
+    return html.unescape(html_str)
 html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
 
 
 # Translators: This string is used as a separator between list elements
 DEFAULT_SEPARATOR = ugettext_lazy(", ")
+
 
 @keep_lazy_text
 def get_text_joined(list_, separator=DEFAULT_SEPARATOR, last_word=ugettext_lazy(' and ')):
