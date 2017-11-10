@@ -31,7 +31,7 @@ def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
         return queryset.exclude(pk=instance.pk) \
             .filter(**{"%s__istartswith" % slug_field: slug}).values_list(slug_field, flat=True)
 
-    similar_slugs = get_similar_slugs(slug)
+    similar_slugs = list(get_similar_slugs(slug))
     while slug in similar_slugs or len(slug) > max_length:
         index += 1
         slug = "%s-%i" % (orig_slug, index)
