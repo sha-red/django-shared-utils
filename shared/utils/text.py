@@ -3,15 +3,17 @@ from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2015-2017
 
 import html
+import re
 
 from django.utils import six
-from django.utils.encoding import force_text, smart_text
+from django.utils.encoding import force_text
 from django.utils.functional import allow_lazy, keep_lazy_text
 from django.utils.safestring import SafeText
+from django.utils.html import mark_safe
 from django.utils.text import slugify
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import ugettext_lazy
 
-from bs4 import BeautifulStoneSoup
+# from bs4 import BeautifulStoneSoup
 import translitcodec  # provides 'translit/long', used by codecs.encode()
 import codecs
 
@@ -59,3 +61,18 @@ def get_text_joined(list_, separator=DEFAULT_SEPARATOR, last_word=ugettext_lazy(
     return '%s%s%s' % (
         separator.join(force_text(i) for i in list_[:-1]),
         force_text(last_word), force_text(list_[-1]))
+
+
+def slimdown(text):
+    """
+    Converts simplified markdown (*, **, _) to <i>, <b> und <u> tags.
+    """
+    i_pattern = re.compile(r"(\*)(.*?)\1")
+    b_pattern = re.compile(r"(\*\*)(.*?)\1")
+    u_pattern = re.compile(r"(_)(.*?)\1")
+
+    text, n = re.subn(i_pattern, "<i>\\2</i>", text)
+    text, n = re.subn(b_pattern, "<b>\\2</b>", text)
+    text, n = re.subn(u_pattern, "<u>\\2</u>", text)
+    return mark_safe(text)
+

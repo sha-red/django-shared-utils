@@ -48,3 +48,8 @@ def nbsp(text, autoescape=True):
 @stringfilter
 def html_entities_to_unicode(text):
     return mark_safe(text_utils.html_entities_to_unicode(text))
+
+
+@register.filter(needs_autoescape=False)
+def slimdown(text):
+    return mark_safe(text_utils.slimdown(text))
