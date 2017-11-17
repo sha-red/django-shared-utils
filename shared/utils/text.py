@@ -69,7 +69,7 @@ def slimdown(text):
     """
     i_pattern = re.compile(r"(\*)(.*?)\1")
     b_pattern = re.compile(r"(\*\*)(.*?)\1")
-    u_pattern = re.compile(r"(_)(.*?)\1")
+    u_pattern = re.compile(r"(__)(.*?)\1")
 
     text, n = re.subn(i_pattern, "<i>\\2</i>", text)
     text, n = re.subn(b_pattern, "<b>\\2</b>", text)
