@@ -24,12 +24,12 @@ def downgrade(value):
     """
     value = force_text(value)
     return codecs.encode(value, 'translit/long')
-downgrade = allow_lazy(downgrade, six.text_type, SafeText)
+# downgrade = allow_lazy(downgrade, six.text_type, SafeText)
 
 
 def slugify_long(value):
     return slugify(downgrade(value))
-slugify_long = allow_lazy(slugify_long, six.text_type, SafeText)
+# slugify_long = allow_lazy(slugify_long, six.text_type, SafeText)
 
 
 # Spreading umlauts is included in the translit/long codec.
