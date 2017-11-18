@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2015
 
 import os
+from collections import OrderedDict
 from contextlib import contextmanager
 from django import http
 from django.conf import settings
@@ -37,13 +38,24 @@ def get_language(language_code=None):
     return _normalize_language_code(language_code)[:2]
 
 
-def lang_suffix(language_code=None):
+def get_language_order(languages=None):
+    """
+    Returns a copy of settings.LANGUAGES with the active language at the first position.
+    """
+    languages = languages or list(OrderedDict(settings.LANGUAGES).keys())
+    languages.insert(0, languages.pop(languages.index(get_language())))
+    return languages
+
+
+def lang_suffix(language_code=None, fieldname=None):
     """
     Returns the suffix appropriate for adding to field names for selecting
     the current language.
+
+    If fieldname is given, returns the suffixed fieldname.
     """
-    language_code = _normalize_language_code(language_code)[:2]
-    return "_{}".format(language_code)
+    language_code = _normalize_language_code(language_code or get_language())[:2]
+    return "{}_{}".format(fieldname or "", language_code)
 
 
 class DirectTemplateView(TemplateView):
