@@ -115,9 +115,9 @@ def format_date_range(from_date, to_date, variant=DEFAULT_VARIANT):
 
         f = t = ""
         if from_date:
-            f = date_format(from_date, get_format(from_format), lang=get_language())
+            f = date_format(from_date, get_format(from_format, lang=get_language()))
         if to_date:
-            t = date_format(to_date, get_format(to_format), lang=get_language())
+            t = date_format(to_date, get_format(to_format, lang=get_language()))
 
         separator = get_format('DATE_RANGE_SEPARATOR', lang=get_language()) or " - "
         return separator.join((f, t))
