@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from django import http
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
-from django.url.base import translate_url
+from django.urls.base import translate_url
 from django.http import HttpResponseRedirect
 from django.template.loader import select_template
 from django.utils import translation
