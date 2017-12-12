@@ -7,7 +7,7 @@ import re
 
 from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.functional import allow_lazy, keep_lazy_text
+from django.utils.functional import keep_lazy, keep_lazy_text
 from django.utils.safestring import SafeText
 from django.utils.html import mark_safe
 from django.utils.text import slugify
@@ -44,7 +44,7 @@ slugify_german = slugify_long
 # Works only with Python >= 3.4
 def html_entities_to_unicode(html_str):
     return html.unescape(html_str)
-html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
+# html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
 
 
 # Translators: This string is used as a separator between list elements
