@@ -152,7 +152,7 @@ def format_time_range(from_time, to_time, variant=DEFAULT_VARIANT):
     from_format = to_format = "q"  # get_format(variant + 'TIME_FORMAT', lang=get_language())
 
     if from_time == to_time or not to_time:
-        return time_format(from_time, get_format(from_format), lang=get_language())
+        return time_format(from_time, get_format(from_format, lang=get_language()))
     else:
         f = t = ""
         if from_time:
