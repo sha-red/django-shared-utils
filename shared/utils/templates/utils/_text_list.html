@@ -1,5 +1,6 @@
 {% load i18n %}
 {# List of items, where items have a (potentially empty) get_absolute_url and a name attribute #}
+{# Usage: {% include "utils/_text_list.html" with items=page.get_authors %} #}
 
 	{% for item in items %}
 		{% if forloop.last and forloop.counter > 1 %}{% trans "und" %}{% endif %}

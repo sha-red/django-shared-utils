@@ -53,3 +53,23 @@ def html_entities_to_unicode(text):
 @register.filter(needs_autoescape=False)
 def slimdown(text):
     return mark_safe(text_utils.slimdown(text))
+
+
+@register.filter(is_safe=True)
+@stringfilter
+def html_lines_to_list(value):
+    """
+    Replaces all <br> tags with ", "
+    """
+    rv = []
+    lines = value.split("<br>")
+    for i in range(0, len(lines)):
+        line = lines[i].strip()
+        rv.append(line)
+        if i < len(lines) - 1:
+            if line[-1] not in ";:,.-–—":
+                rv.append(", ")
+            else:
+                rv.append(" ")
+    return "".join(rv)
+    return ", ".join([l.strip() for l in value.split("<br>")])
