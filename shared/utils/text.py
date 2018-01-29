@@ -2,11 +2,13 @@
 from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2015-2017
 
-import html
+from django.utils import six
+if six.PY3:
+    import html
+
 import re
 
-from django.utils import six
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, smart_text
 from django.utils.functional import keep_lazy, keep_lazy_text
 from django.utils.safestring import SafeText
 from django.utils.html import mark_safe
@@ -36,15 +38,18 @@ def slugify_long(value):
 slugify_german = slugify_long
 
 
-# Does not work anymore with bs4
-# def html_entities_to_unicode(html):
-#     text = smart_text(BeautifulStoneSoup(html, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
-#     return text
+if six.PY2:
+    import bs4
 
-# Works only with Python >= 3.4
-def html_entities_to_unicode(html_str):
-    return html.unescape(html_str)
-# html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
+    def html_entities_to_unicode(html):
+        # An incoming HTML or XML entity is always converted into the corresponding Unicode character in bs4
+        return smart_text(bs4.BeautifulStoneSoup(html))
+
+else:
+    # Works only with Python >= 3.4
+    def html_entities_to_unicode(html_str):
+        return html.unescape(html_str)
+    # html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
 
 
 # Translators: This string is used as a separator between list elements
