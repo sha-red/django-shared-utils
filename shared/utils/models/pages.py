@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2017
 
-from functools import reduce, partial
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -10,9 +8,10 @@ from django.utils.html import strip_tags
 from django.utils.text import normalize_newlines
 from django.utils.translation import ugettext_lazy as _
 
+from shared.multilingual.utils import i18n_fields_list
+from shared.utils.text import slimdown
 from ..fields import AutoSlugField
 from ..functional import firstof
-from shared.utils.text import slimdown
 
 
 USE_TRANSLATABLE_FIELDS = getattr(settings, 'CONTENT_USE_TRANSLATABLE_FIELDS', False)
@@ -85,24 +84,11 @@ class PageTitlesMixin(models.Model):
         )
 
 
-# TODO Move to shared.multilingual or shared.utils.translation
-def language_variations_for_field(language_codes, fields):
-    # TODO Check if field is translatable
-    return ["{}_{}".format(fields, s) for s in language_codes]
-
-
-def language_variations_for_fields(fields, language_codes=None):
-    if not language_codes:
-        language_codes = [t[0] for t in settings.LANGUAGES]
-    f = partial(language_variations_for_field, language_codes)
-    return reduce(lambda x, y: x + y, map(f, fields))
-
-
 class PageTitleAdminMixin(object):
     search_fields = ['short_title', 'title', 'window_title']
     list_display = ['short_title', 'slug']
     if USE_TRANSLATABLE_FIELDS:
-        search_fields = language_variations_for_fields(search_fields)
+        search_fields = i18n_fields_list(search_fields)
         prepopulated_fields = {
             'slug': ('short_title_en',),  # FIXME Language suffix
         }
