@@ -35,7 +35,7 @@ def _normalize_language_code(language_code):
 
 
 def get_language(language_code=None):
-    return _normalize_language_code(language_code)[:2]
+    return _normalize_language_code(language_code).split("-")[0]
 
 
 def get_language_order(languages=None):
@@ -54,7 +54,7 @@ def lang_suffix(language_code=None, fieldname=None):
 
     If fieldname is given, returns the suffixed fieldname.
     """
-    language_code = _normalize_language_code(language_code or get_language())[:2]
+    language_code = _normalize_language_code(language_code or get_language()).split("-")[0]
     return "{}_{}".format(fieldname or "", language_code)
 
 
@@ -88,7 +88,7 @@ def i18n_direct_to_template(request, *args, **kwargs):
 
 
 def get_translation(obj, relation_name='translations', language_code=None):
-    language_code = _normalize_language_code(language_code)[:2]
+    language_code = _normalize_language_code(language_code).split("-")[0]
     try:
         return getattr(obj, relation_name).get(language=language_code)
     except ObjectDoesNotExist:
@@ -97,39 +97,6 @@ def get_translation(obj, relation_name='translations', language_code=None):
             return getattr(obj, relation_name).get(language=(language_code == 'en' and 'de' or 'en'))
         except ObjectDoesNotExist:
             return None
-
-
-# class FieldTranslationMixin(object):
-#     """
-#     If the model has a field `attr` or `attr_<language_code>`, return it's
-#     value, else raise ValueError.
-#     """
-
-#     def __getattr__(self, attr):
-#         if attr in self.__dict__:
-#             return self.__dict__[attr]
-#         for field in self._meta.multilingual:
-#             code = None
-#             match = re.match(r'^%s_(?P<code>[a-z_]{2,5})$' % field, str(attr))
-#             if match:
-#                 code = match.groups('code')
-#                 code = code[:2] # let's limit it to two letter
-#             elif attr in self._meta.multilingual:
-#                 code = self._language
-#                 field = attr
-#             if code is not None:
-#                 try:
-#                     return self._meta.translation.objects.select_related().get(model=self, language__code=code).__dict__[field]
-#                 except ObjectDoesNotExist:
-#                     if MULTILINGUAL_FALL_BACK_TO_DEFAULT and MULTILINGUAL_DEFAULT and code != MULTILINGUAL_DEFAULT:
-#                         try:
-#                             return self._meta.translation.objects.select_related().get(model=self, language__code=MULTILINGUAL_DEFAULT).__dict__[field]
-#                         except ObjectDoesNotExist:
-#                             pass
-#                     if MULTILINGUAL_FAIL_SILENTLY:
-#                         return None
-#                     raise ValueError, "'%s' has no translation in '%s'"%(self, code)
-#         raise AttributeError, "'%s' object has no attribute '%s'"%(self.__class__.__name__, str(attr))
 
 
 def get_translated_field(obj, field_name, language_code=None):
@@ -157,8 +124,8 @@ def get_translated_field(obj, field_name, language_code=None):
             field_name + lang_suffix other language
     """
     # TODO Implement multiple languages
-    language_code = _normalize_language_code(language_code)[:2]
-    is_default_language = bool(language_code == settings.LANGUAGE_CODE[:2])
+    language_code = _normalize_language_code(language_code).split("-")[0]
+    is_default_language = bool(language_code == settings.LANGUAGE_CODE.split("-")[0])
     if language_code == 'de':
         other_language_code = 'en'
     else:
