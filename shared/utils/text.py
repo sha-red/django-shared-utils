@@ -43,7 +43,7 @@ if six.PY2:
 
     def html_entities_to_unicode(html):
         # An incoming HTML or XML entity is always converted into the corresponding Unicode character in bs4
-        return smart_text(bs4.BeautifulStoneSoup(html))
+        return smart_text(bs4.BeautifulSoup(html), 'lxml')
 
 else:
     # Works only with Python >= 3.4
