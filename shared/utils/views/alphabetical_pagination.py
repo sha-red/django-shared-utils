@@ -29,7 +29,7 @@ class AlphabeticalPaginationMixin(object):
         filter = {
             "{}__istartswith".format(self.get_alphabetical_pagination_field()):
             self.get_selected_letter()}
-        return qs.filter(**filter)
+        return qs.filter(**filter).order_by(self.alphabetical_pagination_field)
 
     def get_letter_choices(self):
         return self.get_base_queryset().annotate(name_lower=Func(
