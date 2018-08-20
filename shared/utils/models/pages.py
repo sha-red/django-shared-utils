@@ -9,9 +9,9 @@ from django.utils.text import normalize_newlines
 from django.utils.translation import ugettext_lazy as _
 
 from shared.multilingual.utils import i18n_fields_list
-from shared.utils.text import slimdown
 from ..fields import AutoSlugField
 from ..functional import firstof
+from ..text import slimdown
 
 
 USE_TRANSLATABLE_FIELDS = getattr(settings, 'CONTENT_USE_TRANSLATABLE_FIELDS', False)
@@ -25,9 +25,48 @@ if USE_TRANSLATABLE_FIELDS:
 # TODO Leave window_title alone, do not slimdown
 
 
+class PageTitlesFunctionMixin(object):
+    def __str__(self):
+        return strip_tags(slimdown(self.get_short_title()))
+
+    def get_title(self):
+        return slimdown(firstof(
+            self.title,
+            self.get_short_title()
+        ))
+
+    def get_short_title(self):
+        return self.short_title
+
+    def get_window_title(self):
+        return strip_tags(slimdown(
+            firstof(
+                self.window_title,
+                self.get_short_title(),
+                self.get_first_title_line(),
+            )
+        ))
+
+    def get_first_title_line(self):
+        """
+        First line of title field.
+        """
+        return slimdown(
+            normalize_newlines(self.get_title()).partition("\n")[0]
+        )
+
+    def get_subtitle_lines(self):
+        """
+        All but first line of the long title field.
+        """
+        return slimdown(
+            normalize_newlines(self.title).partition("\n")[2]
+        )
+
+
 # TODO Use translatable fields by default
 @python_2_unicode_compatible
-class PageTitlesMixin(models.Model):
+class PageTitlesMixin(models.Model, PageTitlesFunctionMixin):
     """
     A model mixin containg title and slug field for models serving as website
     pages with an URL.
@@ -48,40 +87,6 @@ class PageTitlesMixin(models.Model):
 
     class Meta:
         abstract = True
-
-    def __str__(self):
-        return strip_tags(slimdown(self.short_title))
-
-    def get_title(self):
-        return slimdown(firstof(
-            self.title,
-            self.short_title
-        ))
-
-    def get_window_title(self):
-        return strip_tags(slimdown(
-            firstof(
-                self.window_title,
-                self.short_title,
-                self.get_first_title_line(),
-            )
-        ))
-
-    def get_first_title_line(self):
-        """
-        First line of title field.
-        """
-        return slimdown(
-            normalize_newlines(self.get_title()).partition("\n")[0]
-        )
-
-    def get_subtitle_lines(self):
-        """
-        All but first line of the long title field.
-        """
-        return slimdown(
-            normalize_newlines(self.title).partition("\n")[2]
-        )
 
 
 class PageTitleAdminMixin(object):
