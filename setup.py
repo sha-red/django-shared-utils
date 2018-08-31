@@ -8,8 +8,8 @@ import subprocess
 
 
 """
-Use `git tag 1.0.0` to tag a release; `python setup.py --version`
-to update the  _version.py file.
+Use `git tag -a -m "Release 1.0.0" 1.0.0` to tag a release;
+`python setup.py --version` to update the  _version.py file.
 """
 
 
