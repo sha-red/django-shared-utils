@@ -1,41 +1,45 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2015-2017
 
-from django.utils import six
-if six.PY3:
-    import html
-
+import codecs
+import translitcodec  # provides 'translit/long', used by codecs.encode()
 import re
 
+from django.conf import settings
 from django.utils.encoding import force_text, smart_text
-from django.utils.functional import keep_lazy, keep_lazy_text
-from django.utils.safestring import SafeText
+from django.utils.functional import keep_lazy_text
 from django.utils.html import mark_safe
-from django.utils.text import slugify
+from django.utils import six
+from django.utils.text import slugify as django_slugify
 from django.utils.translation import ugettext_lazy
 
-# from bs4 import BeautifulStoneSoup
-import translitcodec  # provides 'translit/long', used by codecs.encode()
-import codecs
 
-
+@keep_lazy_text
 def downgrade(value):
     """
     Downgrade unicode to ascii, transliterating accented characters.
     """
     value = force_text(value)
     return codecs.encode(value, 'translit/long')
-# downgrade = allow_lazy(downgrade, six.text_type, SafeText)
 
 
+@keep_lazy_text
 def slugify_long(value):
-    return slugify(downgrade(value))
-# slugify_long = allow_lazy(slugify_long, six.text_type, SafeText)
+    return django_slugify(downgrade(value))
 
 
 # Spreading umlauts is included in the translit/long codec.
 slugify_german = slugify_long
+
+
+@keep_lazy_text
+def downgrading_slugify(value):
+    # Slugfiy only allowing hyphens, numbers and ASCII characters
+    return re.sub("[ _]+", "-", django_slugify(downgrade(value)))
+
+
+SLUGIFY_FUNCTION = getattr(settings, 'SLUGIFY_FUNCTION', downgrading_slugify)
+slugify = SLUGIFY_FUNCTION
 
 
 if six.PY2:
@@ -46,18 +50,23 @@ if six.PY2:
         return smart_text(bs4.BeautifulSoup(html), 'lxml')
 
 else:
+    import html
+
     # Works only with Python >= 3.4
     def html_entities_to_unicode(html_str):
         return html.unescape(html_str)
     # html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
 
 
-# Translators: This string is used as a separator between list elements
+# Translators: Separator between list elements
 DEFAULT_SEPARATOR = ugettext_lazy(", ")
+
+# Translators: Last separator of list elements
+LAST_WORD_SEPARATOR = ugettext_lazy(" and ")
 
 
 @keep_lazy_text
-def get_text_joined(list_, separator=DEFAULT_SEPARATOR, last_word=ugettext_lazy(' and ')):
+def get_text_joined(list_, separator=DEFAULT_SEPARATOR, last_word=LAST_WORD_SEPARATOR):
     list_ = list(list_)
     if len(list_) == 0:
         return ''
@@ -68,9 +77,10 @@ def get_text_joined(list_, separator=DEFAULT_SEPARATOR, last_word=ugettext_lazy(
         force_text(last_word), force_text(list_[-1]))
 
 
+@keep_lazy_text
 def slimdown(text):
     """
-    Converts simplified markdown (**, *, _) to <b>, <i> und <u> tags.
+    Converts simplified markdown (`**`, `*`, `__`) to <b>, <i> und <u> tags.
     """
     b_pattern = re.compile(r"(\*\*)(.*?)\1")
     i_pattern = re.compile(r"(\*)(.*?)\1")
@@ -80,4 +90,3 @@ def slimdown(text):
     text, n = re.subn(i_pattern, "<i>\\2</i>", text)
     text, n = re.subn(u_pattern, "<u>\\2</u>", text)
     return mark_safe(text)
-

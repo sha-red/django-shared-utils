@@ -1,1 +1,11 @@
-Added PageTitlesFunctionMixin.
+Next
+- Improved slug functions, slug fields (DowngradingSlugField).
+- Move location of SLUG_HELP, DEFAULT_SLUG and AutoSlugField, now in shared.utils.models.slugs.
+- Added SlugTreeMixin and helper signal functions.
+- __str__ function for PageTitlesMixin
+
+0.2.4
+- Added RuntimeMixin.
+
+0.2.3
+- Added PageTitlesFunctionMixin.

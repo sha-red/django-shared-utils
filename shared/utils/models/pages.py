@@ -88,6 +88,9 @@ class PageTitlesMixin(models.Model, PageTitlesFunctionMixin):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.short_title
+
 
 class PageTitleAdminMixin(object):
     search_fields = ['short_title', 'title', 'window_title']

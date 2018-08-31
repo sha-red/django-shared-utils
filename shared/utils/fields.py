@@ -1,83 +1,55 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2008-2015
 
 import re
-from django.db.models import fields
-from django.utils import six
-from django.utils.translation import ugettext_lazy as _
-if six.PY3:
-    from functools import reduce
 
-from .text import slugify_long as slugify
-from . import SLUG_HELP
+from .text import slugify
 
 
-DEFAULT_SLUG = _("item")
+# TODO Remove deprecated location
+from .models.slugs import AutoSlugField
 
 
-def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
+def uniquify_field_value(instance, field_name, value, max_length=None, queryset=None):
     """
-    TODO Doesn't work with model inheritance, where the slug field is part of the parent class.
-    """
-    if not slug_value:
-        raise ValueError("Cannot uniquify empty slug")
-    orig_slug = slug = slugify(slug_value)
-    index = 0
-    if not queryset:
-        queryset = instance.__class__._default_manager.get_queryset()
+    Makes a char field value unique by appending an index, taking care of the
+    field's max length.
 
-    def get_similar_slugs(slug):
+    FIXME Doesn't work with model inheritance, where the field is part of the parent class.
+    """
+    def get_similar_values(value):
         return queryset.exclude(pk=instance.pk) \
-            .filter(**{"%s__istartswith" % slug_field: slug}).values_list(slug_field, flat=True)
+            .filter(**{"%s__istartswith" % field_name: value}).values_list(field_name, flat=True)
 
-    similar_slugs = list(get_similar_slugs(slug))
-    while slug in similar_slugs or len(slug) > max_length:
+    if not value:
+        raise ValueError("Cannot uniquify empty value")
+        # TODO Instead get value from instance.field, or use a default value?
+    if not max_length:
+        max_length = instance._meta.get_field(field_name).max_length
+    if not queryset:
+        queryset = instance._meta.default_manager.get_queryset()
+
+    # Find already existing counter
+    m = re.match(r'(.+)(-\d+)$', value)
+    if m:
+        base_value, counter = m.groups()
+        index = int(counter.strip("-")) + 1
+    else:
+        base_value = value
+        index = 2  # Begin appending "-2"
+
+    similar_values = get_similar_values(value)
+    while value in similar_values or len(value) > max_length:
+        value = "%s-%i" % (base_value, index)
+        if len(value) > max_length:
+            base_value = base_value[:-(len(value) - max_length)]
+            value = "%s-%i" % (base_value, index)
+            similar_values = get_similar_values(base_value)
         index += 1
-        slug = "%s-%i" % (orig_slug, index)
-        if len(slug) > max_length:
-            orig_slug = orig_slug[:-(len(slug) - max_length)]
-            slug = "%s-%i" % (orig_slug, index)
-            similar_slugs = get_similar_slugs(orig_slug)
-    return slug
+    return value
 
 
-def unique_slug2(instance, slug_source, slug_field):
-    slug = slugify(slug_source)
-    all_slugs = [sl.values()[0] for sl in instance.__class__._default_manager.values(slug_field)]
-    if slug in all_slugs:
-        counter_finder = re.compile(r'-\d+$')
-        counter = 2
-        slug = "%s-%i" % (slug, counter)
-        while slug in all_slugs:
-            slug = re.sub(counter_finder, "-%i" % counter, slug)
-            counter += 1
-    return slug
-
-
-class AutoSlugField(fields.SlugField):
-    # AutoSlugField based on http://www.djangosnippets.org/snippets/728/
-
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault('max_length', 50)
-        kwargs.setdefault('help_text', SLUG_HELP)
-        if 'populate_from' in kwargs:
-            self.populate_from = kwargs.pop('populate_from')
-        self.unique_slug = kwargs.pop('unique_slug', False)
-        super(AutoSlugField, self).__init__(*args, **kwargs)
-
-    def pre_save(self, model_instance, add):
-        value = getattr(model_instance, self.attname)
-        if not value:
-            if hasattr(self, 'populate_from'):
-                # Follow dotted path (e.g. "occupation.corporation.name")
-                value = reduce(lambda obj, attr: getattr(obj, attr), self.populate_from.split("."), model_instance)
-                if callable(value):
-                    value = value()
-            if not value:
-                value = DEFAULT_SLUG
-        if self.unique_slug:
-            return unique_slug(model_instance, self.name, value, max_length=self.max_length)
-        else:
-            return slugify(value)
-
+# TODO Remove alias
+def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
+    slug_value = slugify(slug_value)
+    return uniquify_field_value(instance, slug_field, slug_value, max_length=50, queryset=None)
