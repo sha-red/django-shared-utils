@@ -1,3 +1,6 @@
+0.2.6
+- Added missing requirement for django-dirtyfields
+
 0.2.5
 - Improved slug functions, slug fields (DowngradingSlugField).
 - Move location of SLUG_HELP, DEFAULT_SLUG and AutoSlugField, now in shared.utils.models.slugs.

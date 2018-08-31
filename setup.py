@@ -63,6 +63,7 @@ setup(
         'python-dateutil',
         'beautifulsoup4',
         'translitcodec',
+        'django-dirtyfields',
     ],
     classifiers=[
         # 'Development Status :: 4 - Beta',
