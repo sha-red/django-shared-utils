@@ -52,11 +52,14 @@ class AutoSlugField(django_fields.SlugField):
         value = getattr(model_instance, self.attname)
         if not value:
             if hasattr(self, 'populate_from'):
-                # Follow dotted path (e.g. "occupation.corporation.name")
-                value = reduce(lambda obj, attr: getattr(obj, attr),
-                    self.populate_from.split("."), model_instance)
-                if callable(value):
-                    value = value()
+                if callable(self.populate_from):
+                    value = self.populate_from(model_instance, self)
+                else:
+                    # Follow dotted path (e.g. "occupation.corporation.name")
+                    value = reduce(lambda obj, attr: getattr(obj, attr),
+                        self.populate_from.split("."), model_instance)
+                    if callable(value):
+                        value = value()
             if not value:
                 value = DEFAULT_SLUG
         value = self.slugify(value)
