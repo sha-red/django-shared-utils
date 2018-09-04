@@ -35,6 +35,7 @@ slugify_german = slugify_long
 @keep_lazy_text
 def downgrading_slugify(value):
     # Slugfiy only allowing hyphens, numbers and ASCII characters
+    # FIXME django_slugify might return an empty string; take care that we always return something
     return re.sub("[ _]+", "-", django_slugify(downgrade(value)))
 
 

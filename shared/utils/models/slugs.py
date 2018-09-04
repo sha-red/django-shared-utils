@@ -15,8 +15,6 @@ if six.PY3:
     from functools import reduce
 
 
-DEFAULT_SLUG = getattr(settings, 'DEFAULT_SLUG', "item")
-
 SLUG_HELP = _("Kurzfassung des Namens für die Adresszeile im Browser. Vorzugsweise englisch, keine Umlaute, nur Bindestrich als Sonderzeichen.")
 
 
@@ -62,9 +60,9 @@ class AutoSlugField(django_fields.SlugField):
                         self.populate_from.split("."), model_instance)
                     if callable(value):
                         value = value()
-            if not value:
-                value = DEFAULT_SLUG
         value = self.slugify(value)
+        if not value:
+            value = model_instance._meta.model_name
         if self.unique_slug:
             # TODO Move import to top of file once AutoSlugField is removed from shared.utils.fields and we no longer have a circular import
             from ..fields import uniquify_field_value
