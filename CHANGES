@@ -1,6 +1,5 @@
 0.2.7 2018-09-04
 - Make sure the slug field is never empty.
-- Enforce unique=True if unique_slug=True.
 - Allow function in AutoSlugfield populate_from.
 
 0.2.6
