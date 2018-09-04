@@ -43,6 +43,8 @@ class AutoSlugField(django_fields.SlugField):
         if 'populate_from' in kwargs:
             self.populate_from = kwargs.pop('populate_from')
         self.unique_slug = kwargs.pop('unique_slug', False)
+        if self.unique_slug:
+            kwargs['unique'] = True
         super(AutoSlugField, self).__init__(*args, **kwargs)
 
     def slugify(self, value):
