@@ -1,3 +1,6 @@
+0.2.8 2018-09-21
+- get_admin_url in debug_utils
+
 0.2.7 2018-09-04
 - Make sure the slug field is never empty.
 - Allow function in AutoSlugfield populate_from.
