@@ -5,11 +5,10 @@ from django import template
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
+register = template.Library()
 
 try:
     import ipdb
-
-    register = template.Library()
 
     @register.filter
     def ipdb_inspect(value):
@@ -20,7 +19,7 @@ try:
     def ipdb_set_breakpoint():
         ipdb.set_trace()
 
-except:  # TODO ImportError
+except ImportError:
     pass
 
 
