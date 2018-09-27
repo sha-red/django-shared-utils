@@ -32,7 +32,8 @@ class PageTitlesFunctionMixin(object):
     def get_title(self):
         return slimdown(firstof(
             self.title,
-            self.get_short_title()
+            self.get_short_title(),
+            ''
         ))
 
     def get_short_title(self):
@@ -41,9 +42,10 @@ class PageTitlesFunctionMixin(object):
     def get_window_title(self):
         return strip_tags(slimdown(
             firstof(
-                self.window_title,
+                getattr(self, 'window_title', None),
                 self.get_short_title(),
                 self.get_first_title_line(),
+                ''
             )
         ))
 
