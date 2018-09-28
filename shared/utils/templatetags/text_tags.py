@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2015
 
 import re
+import string
 
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -73,3 +73,60 @@ def html_lines_to_list(value):
                 rv.append(" ")
     return "".join(rv)
     return ", ".join([l.strip() for l in value.split("<br>")])
+
+
+def remove_punctuation(s):
+    # http://stackoverflow.com/questions/265960/best-way-to-strip-punctuation-from-a-string-in-python
+    # return s.translate(s.maketrans("",""), string.punctuation)
+    regex = re.compile('[%s]' % re.escape(string.punctuation))
+    return regex.sub('', s)
+
+
+def splitn(s, n):
+    """split string s into chunks no more than n characters long"""
+    parts = re.split("(.{%d,%d})" % (n, n), s)
+    map(parts.remove, [""] * parts.count(""))
+    return parts
+
+
+def clean_value(value):
+    # Convert all whitespace including non-breaking space to a single space
+    if value:
+        return re.sub(u"([\s\u00A0]+)", u" ", force_text(value.strip()))
+    else:
+        return value
+
+
+@register.filter()
+@stringfilter
+def append(value, text):
+    """
+    Appends text if value is not None.
+    """
+    if value is not None:
+        value = str(value).strip()
+        if value:
+            return "{}{}".format(value, text)
+    return ""
+
+
+@register.filter()
+@stringfilter
+def prepend(value, text):
+    """
+    Prepends text if value is not None.
+    """
+    if value is not None:
+        value = str(value).strip()
+        if value:
+            return "{}{}".format(text, value)
+    return ""
+
+
+@register.filter
+@stringfilter
+def first_line(s):
+    """
+    Strips whitespace, then returns the first line of text.
+    """
+    return s.strip().splitlines(False)[0]
