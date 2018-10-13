@@ -1,5 +1,6 @@
 0.2.13 2018-10-13
 - Improved USE_TRANSLATABLE_FIELDS
+- Option to allow empty runtimes (without even a start date).
 
 0.2.12 2018-09-28
 - Additional text template tags.

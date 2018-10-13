@@ -7,8 +7,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from shared.utils.dateformat import format_partial_date, format_date_range
 from ..conf import USE_TRANSLATABLE_FIELDS
+from ..dateformat import format_partial_date, format_date_range
 
 
 if USE_TRANSLATABLE_FIELDS:
@@ -40,11 +40,13 @@ class RuntimeMixin(models.Model):
         max_length=200, null=True, blank=True,
         help_text=_("Alternativer Text für die Laufzeitangabe"))
 
+    allow_empty_runtime = False
+
     class Meta:
         abstract = True
 
     def clean(self):
-        if not (self.from_year_value or self.until_year_value):
+        if not self.allow_empty_runtime and not (self.from_year_value or self.until_year_value):
             raise ValidationError(_('Please enter either a from or an until date year.'))
 
         # Update from/sort date fields
