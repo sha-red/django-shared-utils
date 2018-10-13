@@ -132,7 +132,7 @@ class SlugTreeMixin(DirtyFieldsMixin, models.Model):
     # TODO Make slug_path manually overridable (see feincms3 -> use_static_path)
     has_url = models.BooleanField(_("has webaddress"), default=True)
 
-    FIELDS_TO_CHECK = ['slug']
+    FIELDS_TO_CHECK = ['slug', 'parent', 'has_url']
 
     class Meta:
         abstract = True

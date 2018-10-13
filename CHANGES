@@ -1,6 +1,7 @@
 0.2.13 2018-10-13
 - Improved USE_TRANSLATABLE_FIELDS
-- Option to allow empty runtimes (without even a start date).
+- Option to allow empty runtimes (without even a start date)
+- SlugTreeMixin: Check `has_url` and `parent` fields, too
 
 0.2.12 2018-09-28
 - Additional text template tags.
