@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.core import validators
 from django.db import models
@@ -44,6 +47,7 @@ class AutoSlugField(django_fields.SlugField):
         # FIXME Enforce unique=True
         # if self.unique_slug:
         #     kwargs['unique'] = True
+        # TODO Refactor: We need a sibling FormField which also does our pre_save work and then validates correctly (called from Model.clean_fields)
         super(AutoSlugField, self).__init__(*args, **kwargs)
 
     def slugify(self, value):
@@ -107,9 +111,25 @@ class DowngradingSlugField(AutoSlugField):
 
 class SlugTreeMixin(DirtyFieldsMixin, models.Model):
     """
-    Expects a `slug` and a `has_url` field.
+    Expects a `slug` and a `parent` field.
+
+    `has_url`: The node itself has an URL. It is possible that a node does
+               node have an URL, but its children have.
+
+    Maintains the `slug_path` field of the node and its children, watching if
+    either the `slug`, `parent` or `has_url` fields have changed.
+
     """
-    slug_path = models.CharField(_("URL path"), max_length=2000, editable=False)
+    slug_path = models.CharField(_("URL path"),
+        unique=True, max_length=2000, editable=False)
+    # TODO Add validator to slug_path?
+    # validators=[
+    #     RegexValidator(
+    #         regex=r"^/(|.+/)$",
+    #         message=_("Path must start and end with a slash (/)."),
+    #     )
+    # ],
+    # TODO Make slug_path manually overridable (see feincms3 -> use_static_path)
     has_url = models.BooleanField(_("has webaddress"), default=True)
 
     FIELDS_TO_CHECK = ['slug']
