@@ -3,16 +3,13 @@ from __future__ import unicode_literals
 
 import datetime
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from shared.utils.dateformat import format_partial_date, format_date_range
+from ..conf import USE_TRANSLATABLE_FIELDS
 
-
-USE_TRANSLATABLE_FIELDS = getattr(settings, 'CONTENT_USE_TRANSLATABLE_FIELDS', False)
-# TODO Implement translatable AutoSlugField: USE_TRANSLATABLE_SLUG_FIELDS = getattr(settings, 'CONTENT_USE_TRANSLATABLE_SLUG_FIELDS', True)
 
 if USE_TRANSLATABLE_FIELDS:
     from shared.multilingual.utils.fields import TranslatableCharField

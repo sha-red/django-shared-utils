@@ -9,17 +9,27 @@ from django.utils.text import normalize_newlines
 from django.utils.translation import ugettext_lazy as _
 
 from shared.multilingual.utils import i18n_fields_list
-from ..fields import AutoSlugField
 from ..functional import firstof
 from ..text import slimdown
+from .slugs import DowngradingSlugField
 
 
-USE_TRANSLATABLE_FIELDS = getattr(settings, 'CONTENT_USE_TRANSLATABLE_FIELDS', False)
-# TODO Implement translatable AutoSlugField: USE_TRANSLATABLE_SLUG_FIELDS = getattr(settings, 'CONTENT_USE_TRANSLATABLE_SLUG_FIELDS', True)
+from ..conf import USE_TRANSLATABLE_FIELDS
 
 
 if USE_TRANSLATABLE_FIELDS:
-    from shared.multilingual.utils.fields import TranslatableCharField, TranslatableTextField
+    from shared.multilingual.utils.fields import (
+        TranslatableCharField,
+        TranslatableTextField
+    )
+    # TODO populate_from might use settings.LANGUAGE_CODE
+    SLUG_POPULATE_FORM = getattr(settings, 'SLUG_POPULATE_FORM', 'name_en')
+
+else:
+    TranslatableCharField = models.CharField
+    TranslatableTextField = models.TextField
+    SLUG_POPULATE_FORM = 'name'
+
 
 # TODO Make slimdown optional through settings
 # TODO Leave window_title alone, do not slimdown
@@ -74,18 +84,14 @@ class PageTitlesMixin(models.Model, PageTitlesFunctionMixin):
     pages with an URL.
     """
     # FIXME signals are not sent from abstract models, therefore AutoSlugField doesn't work
-    if USE_TRANSLATABLE_FIELDS:
         short_title = TranslatableCharField(_("Name"), max_length=50)
-        title = TranslatableTextField(_("Titel (Langform)"), null=True, blank=True, max_length=300)
-        window_title = TranslatableCharField(_("Fenster-/Suchmaschinentitel"), null=True, blank=True, max_length=300)
-        # FIXME populate_from should use settings.LANGUAGE
-        slug = AutoSlugField(_("URL-Name"), max_length=200, populate_from='short_title_de', unique_slug=True, blank=True)
 
-    else:
-        short_title = models.CharField(_("Name"), max_length=50)
-        title = models.TextField(_("Titel (Langform)"), null=True, blank=True, max_length=300)
-        window_title = models.CharField(_("Fenster-/Suchmaschinentitel"), null=True, blank=True, max_length=300)
-        slug = AutoSlugField(_("URL-Name"), max_length=200, populate_from='short_title', unique_slug=True, blank=True)
+    title = TranslatableTextField(_("title/subtitle"),
+        null=True, blank=True, max_length=500)
+    window_title = TranslatableCharField(_("window title"),
+        null=True, blank=True, max_length=300)
+    slug = DowngradingSlugField(_("URL-Name"), max_length=200,
+        populate_from=SLUG_POPULATE_FORM, unique_slug=True, blank=True)
 
     class Meta:
         abstract = True
@@ -99,10 +105,6 @@ class PageTitleAdminMixin(object):
     list_display = ['short_title', 'slug']
     if USE_TRANSLATABLE_FIELDS:
         search_fields = i18n_fields_list(search_fields)
-        prepopulated_fields = {
-            'slug': ('short_title_en',),  # FIXME Language suffix
-        }
-    else:
-        prepopulated_fields = {
-            'slug': ('short_title',),  # FIXME Language suffix
-        }
+    prepopulated_fields = {
+        'slug': [SLUG_POPULATE_FORM]
+    }
