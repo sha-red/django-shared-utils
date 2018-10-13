@@ -47,7 +47,7 @@ class PageTitlesFunctionMixin(object):
         ))
 
     def get_short_title(self):
-        return self.short_title
+        return self.name
 
     def get_window_title(self):
         return strip_tags(slimdown(
@@ -83,9 +83,11 @@ class PageTitlesMixin(models.Model, PageTitlesFunctionMixin):
     A model mixin containg title and slug field for models serving as website
     pages with an URL.
     """
-    # FIXME signals are not sent from abstract models, therefore AutoSlugField doesn't work
-        short_title = TranslatableCharField(_("Name"), max_length=50)
-
+    name = TranslatableCharField(_("Name"),
+        max_length=250)
+    short_name = TranslatableCharField(_("Short Name"),
+        max_length=25, null=True, blank=True,
+        help_text=_("Optional, used for menus etc."))
     title = TranslatableTextField(_("title/subtitle"),
         null=True, blank=True, max_length=500)
     window_title = TranslatableCharField(_("window title"),
@@ -97,12 +99,21 @@ class PageTitlesMixin(models.Model, PageTitlesFunctionMixin):
         abstract = True
 
     def __str__(self):
-        return self.short_title
+        return self.name
+
+    # FIXME short_title is deprecated
+    @property
+    def short_title(self):
+        return self.name
+
+    @short_title.setter
+    def short_title(self, value):
+        self.name = value
 
 
 class PageTitleAdminMixin(object):
-    search_fields = ['short_title', 'title', 'window_title']
-    list_display = ['short_title', 'slug']
+    list_display = ['name', 'slug']
+    search_fields = ['name', 'title', 'window_title']
     if USE_TRANSLATABLE_FIELDS:
         search_fields = i18n_fields_list(search_fields)
     prepopulated_fields = {
