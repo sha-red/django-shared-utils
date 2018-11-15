@@ -59,15 +59,19 @@ def format(value, format):
     return df.format(format)
 
 
-def time_format(value, format=None, use_l10n=None):
+def time_format(value, format=None, use_l10n=None, lang=None):
     # Copy of django.utils.dateformat.time_format, using our extended formatter
+    if not lang:
+        lang = get_language()
     tf = ExtendedFormat(value)
-    return tf.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n, lang=get_language()))
+    return tf.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n, lang=lang))
 
 
-def date_format(value, format=None, use_l10n=None):
+def date_format(value, format=None, use_l10n=None, lang=None):
+    if not lang:
+        lang = get_language()
     df = ExtendedFormat(value)
-    return df.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n, lang=get_language()))
+    return df.format(get_format(format or 'DATE_FORMAT', use_l10n=use_l10n, lang=lang))
 
 
 def _normalize_variant(variant):
