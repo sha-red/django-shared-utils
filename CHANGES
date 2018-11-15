@@ -1,3 +1,8 @@
+0.2.14 2018-11-15
+- lang parameter for time_format, date_format
+- _text_list.html without unnecessary whitespace
+- Separated fields from methods in RuntimeMixin
+
 0.2.13 2018-10-13
 - Improved USE_TRANSLATABLE_FIELDS
 - Option to allow empty runtimes (without even a start date)
