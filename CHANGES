@@ -1,3 +1,6 @@
+0.2.16 2018-11-21
+- Improved get_runtime_display.
+
 0.2.15 2018-11-21
 - Respect USE_TRANSLATABLE_FIELDS setting.
 - view_helpers template tags.
