@@ -82,8 +82,9 @@ class RuntimeBehaviour:
 
     def get_runtime_display(self):
         # TODO Improve
-        if not self.runtime_text and \
-           self.from_day_value and self.from_month_value:
+        if self.runtime_text:
+            return self.runtime_text
+        elif self.from_day_value and self.from_month_value:
             return format_date_range(self.from_date, self.until_date)
         else:
             f = self.get_from_display()
@@ -92,7 +93,7 @@ class RuntimeBehaviour:
                 return f
 
             u = self.get_until_display()
-            if f and u:
+            if f and u and not f == u:
                 return "{}–{}".format(f, u)
             else:
                 return f or u
