@@ -1,3 +1,7 @@
+0.2.15 2018-11-21
+- Respect USE_TRANSLATABLE_FIELDS setting.
+- view_helpers template tags.
+
 0.2.14 2018-11-15
 - lang parameter for time_format, date_format
 - _text_list.html without unnecessary whitespace

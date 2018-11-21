@@ -49,7 +49,7 @@ class RuntimeBehaviour:
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        super(RuntimeMixin, self).save(*args, **kwargs)
+        super(RuntimeBehaviour, self).save(*args, **kwargs)
 
     @property
     def from_date(self):
