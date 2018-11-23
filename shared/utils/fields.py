@@ -14,7 +14,7 @@ from .text import slugify_long as slugify
 from . import SLUG_HELP
 
 
-DEFAULT_SLUG = _("item")
+DEFAULT_SLUG = "item"
 
 
 def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
@@ -23,7 +23,7 @@ def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
     """
     if not slug_value:
         raise ValueError("Cannot uniquify empty slug")
-    orig_slug = slug = force_text(slugify(slug_value))
+    orig_slug = slug = slugify(force_text(slug_value))
     index = 0
     if not queryset:
         queryset = instance.__class__._default_manager.get_queryset()
@@ -32,7 +32,7 @@ def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
         return queryset.exclude(pk=instance.pk) \
             .filter(**{"%s__istartswith" % slug_field: slug}).values_list(slug_field, flat=True)
 
-    similar_slugs = list(get_similar_slugs(slug))
+    similar_slugs = get_similar_slugs(slug)
     while slug in similar_slugs or len(slug) > max_length:
         index += 1
         slug = "%s-%i" % (orig_slug, index)
