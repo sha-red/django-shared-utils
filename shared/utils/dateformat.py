@@ -115,7 +115,7 @@ def format_date_range(from_date, to_date, variant=DEFAULT_VARIANT):
 
         f = t = ""
         if from_date:
-            f = date_format(from_date, get_format(from_format), lang=get_language())
+            f = date_format(from_date, get_format(from_format, lang=get_language()))
         if to_date:
             t = date_format(to_date, get_format(to_format), lang=get_language())
 
@@ -152,11 +152,11 @@ def format_time_range(from_time, to_time, variant=DEFAULT_VARIANT):
     from_format = to_format = "q"  # get_format(variant + 'TIME_FORMAT', lang=get_language())
 
     if from_time == to_time or not to_time:
-        return time_format(from_time, get_format(from_format), lang=get_language())
+        return time_format(from_time, get_format(from_format, lang=get_language()))
     else:
         f = t = ""
         if from_time:
-            f = time_format(from_time, get_format(from_format), lang=get_language())
+            f = time_format(from_time, get_format(from_format, lang=get_language()))
         if to_time:
             t = time_format(to_time, get_format(to_format), lang=get_language())
 

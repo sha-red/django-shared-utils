@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import re
 from django.db.models import fields
 from django.utils import six
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 if six.PY3:
     from functools import reduce
@@ -22,7 +23,7 @@ def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
     """
     if not slug_value:
         raise ValueError("Cannot uniquify empty slug")
-    orig_slug = slug = slugify(slug_value)
+    orig_slug = slug = force_text(slugify(slug_value))
     index = 0
     if not queryset:
         queryset = instance.__class__._default_manager.get_queryset()
@@ -31,7 +32,7 @@ def unique_slug(instance, slug_field, slug_value, max_length=50, queryset=None):
         return queryset.exclude(pk=instance.pk) \
             .filter(**{"%s__istartswith" % slug_field: slug}).values_list(slug_field, flat=True)
 
-    similar_slugs = get_similar_slugs(slug)
+    similar_slugs = list(get_similar_slugs(slug))
     while slug in similar_slugs or len(slug) > max_length:
         index += 1
         slug = "%s-%i" % (orig_slug, index)
