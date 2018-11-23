@@ -14,18 +14,18 @@ import translitcodec  # provides 'translit/long', used by codecs.encode()
 import codecs
 
 
+@keep_lazy_text
 def downgrade(value):
     """
     Downgrade unicode to ascii, transliterating accented characters.
     """
     value = force_text(value)
     return codecs.encode(value, 'translit/long')
-downgrade = allow_lazy(downgrade, six.text_type, SafeText)
 
 
+@keep_lazy_text
 def slugify_long(value):
     return slugify(downgrade(value))
-slugify_long = allow_lazy(slugify_long, six.text_type, SafeText)
 
 
 # Spreading umlauts is included in the translit/long codec.
