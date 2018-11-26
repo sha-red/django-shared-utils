@@ -9,7 +9,7 @@ from django.utils.safestring import SafeText
 from django.utils.text import slugify
 from django.utils.translation import ugettext as _, ugettext_lazy
 
-from bs4 import BeautifulStoneSoup
+from HTMLParser import HTMLParser
 import translitcodec  # provides 'translit/long', used by codecs.encode()
 import codecs
 
@@ -33,8 +33,8 @@ slugify_german = slugify_long
 
 
 def html_entities_to_unicode(html):
-    text = smart_text(BeautifulStoneSoup(html, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
-    return text
+    parser = HTMLParser()
+    return parser.unescape(html)
 html_entities_to_unicode = allow_lazy(html_entities_to_unicode, six.text_type, SafeText)
 
 
