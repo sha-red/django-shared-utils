@@ -1,8 +1,9 @@
-
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.translation import ngettext, gettext_lazy as _
 
 
 class AdminActionBase:
@@ -73,3 +74,46 @@ class AdminActionBase:
             'action_form': form,
             'opts': modeladmin.model._meta,
         })
+
+
+class TargetActionBase(AdminActionBase):
+    target_model = None
+    related_field_name = None
+
+    def get_form_class(self, modeladmin, request, queryset):
+        class ChooseTargetForm(AdminActionBase.BaseForm):
+            chosen_target = forms.ModelChoiceField(
+                label=_("Choose {}".format(self.target_model._meta.verbose_name)),
+                queryset=self.target_model.objects.exclude(pk__in=queryset),
+                widget=ForeignKeyRawIdWidget(
+                    modeladmin.model._meta.get_field(self.related_field_name).rel,
+                    modeladmin.admin_site
+                ),
+            )
+        return ChooseTargetForm
+
+    def get_message(self, form, count):
+        chosen_target = form.cleaned_data['chosen_target']
+        target_name = chosen_target.name
+        return ngettext(
+            'Successfully added %(count)d %(verbose_name)s to %(target)s.',
+            'Successfully added %(count)d %(verbose_name_plural)s to %(target)s.',
+            count) % {
+                'count': count,
+                'verbose_name': self.target_model._meta.verbose_name,
+                'verbose_name_plural': self.target_model._meta.verbose_name_plural,
+                'target': target_name}
+
+    def get_failure_message(self, form, count, failure_count):
+        chosen_target = form.cleaned_data['chosen_target']
+        target_name = chosen_target.name
+        return ngettext(
+            'Adding %(count)d %(verbose_name)s to %(target)s, %(failure_count)s failed or skipped.',
+            'Adding %(count)d %(verbose_name_plural)s to %(target)s, %(failure_count)s failed or skipped.',
+            count) % {
+                'count': count,
+                'verbose_name': self.target_model._meta.verbose_name,
+                'verbose_name_plural': self.target_model._meta.verbose_name_plural,
+                'target': target_name,
+                'failure_count': failure_count}
+
