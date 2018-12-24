@@ -1,3 +1,4 @@
+- Added dispatch_slug_path.
 0.2.17 2018-12-17
 - PageTitlesMixin: Slimdown name for get_short_title.
 - Daytime utils.
