@@ -13,6 +13,10 @@ class AdminActionBase:
     queryset_action_label = None
     action_button_label = None
 
+    def __init__(self, action_name=None):
+        if action_name:
+            self.action_name = action_name
+
     def apply(self, queryset, form):
         raise NotImplementedError
 
@@ -91,6 +95,9 @@ class TargetActionBase(AdminActionBase):
                 ),
             )
         return ChooseTargetForm
+
+    def get_target(self, form):
+        return form.cleaned_data['chosen_target']
 
     def get_message(self, form, count):
         chosen_target = form.cleaned_data['chosen_target']

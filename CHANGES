@@ -1,5 +1,6 @@
+0.2.18 2019-01-28
 - Added dispatch_slug_path.
-- Added AdminActionBase.
+- Added AdminActionBase, TargetActionBase.
 
 0.2.17 2018-12-17
 - PageTitlesMixin: Slimdown name for get_short_title.
