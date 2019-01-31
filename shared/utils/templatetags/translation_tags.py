@@ -1,13 +1,32 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2014-2015
-
 from django import template
+from django.urls.exceptions import NoReverseMatch
+from django.urls import reverse
+from django.utils.six.moves.urllib.parse import urlsplit, urlunsplit
+from django.utils.translation import override
 
 from ..translation import get_translation, get_translated_field
 
 
 register = template.Library()
+
+
+@register.simple_tag(takes_context=True)
+def switch_language_url(context, lang_code: str):
+    request = context['request']
+    match = request.resolver_match
+    parsed_url = urlsplit(request.get_full_path())
+
+    to_be_reversed = "%s:%s" % (match.namespace, match.url_name) \
+        if match.namespace else match.url_name
+    with override(lang_code):
+        try:
+            url = reverse(to_be_reversed, args=match.args, kwargs=match.kwargs)
+        except NoReverseMatch:
+            pass
+        else:
+            url = urlunsplit((parsed_url.scheme, parsed_url.netloc,
+                url, parsed_url.query, parsed_url.fragment))
+    return url
 
 
 @register.filter
