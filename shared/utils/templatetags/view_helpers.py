@@ -22,3 +22,8 @@ def paginator_context(page_range, current):
     if len(after) > 3:
         after = after[:1] + [''] + after[-2:]
     return before + [current] + after
+
+
+@register.filter
+def select_template(template_list):
+    return template.loader.select_template(template_list)
