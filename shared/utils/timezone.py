@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2015
 """
 
 Django and Timezones
@@ -17,6 +14,8 @@ A sample Django application illustrating some time zone traps for the unwary.
 
 """
 
+import datetime
+from django.conf import settings
 from django.utils import timezone
 
 
@@ -28,3 +27,12 @@ def smart_default_tz(datetime_value):
         datetime_value = timezone.make_aware(datetime_value, timezone=timezone.get_default_timezone())
     return timezone.localtime(datetime_value, timezone.get_default_timezone())
 
+
+def timezone_today():
+    """
+    Return the current date in the current time zone.
+    """
+    if settings.USE_TZ:
+        return timezone.localdate()
+    else:
+        return datetime.date.today()
