@@ -35,9 +35,10 @@ else:
 # TODO Leave window_title alone, do not slimdown
 
 
+@python_2_unicode_compatible
 class PageTitlesFunctionMixin(object):
     def __str__(self):
-        return strip_tags(slimdown(self.get_short_title()))
+        return strip_tags(self.get_short_title())
 
     def get_title(self):
         return slimdown(firstof(
@@ -76,9 +77,7 @@ class PageTitlesFunctionMixin(object):
         )
 
 
-# TODO Use translatable fields by default
-@python_2_unicode_compatible
-class PageTitlesMixin(models.Model, PageTitlesFunctionMixin):
+class PageTitlesMixin(PageTitlesFunctionMixin, models.Model):
     """
     A model mixin containg title and slug field for models serving as website
     pages with an URL.
@@ -98,13 +97,10 @@ class PageTitlesMixin(models.Model, PageTitlesFunctionMixin):
     class Meta:
         abstract = True
 
-    def __str__(self):
-        return self.name
-
     # FIXME short_title is deprecated
     @property
     def short_title(self):
-        return self.name
+        return self.get_short_title()
 
     @short_title.setter
     def short_title(self, value):
