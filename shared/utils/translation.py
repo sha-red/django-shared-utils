@@ -47,7 +47,8 @@ def get_language_order(languages=None):
     return languages
 
 
-def lang_suffix(language_code=None, fieldname=None):
+# TODO Deprecated 'fieldname' parameter, use 'field_name'
+def lang_suffix(language_code=None, field_name=None, fieldname=None):
     """
     Returns the suffix appropriate for adding to field names for selecting
     the current language.
@@ -55,7 +56,7 @@ def lang_suffix(language_code=None, fieldname=None):
     If fieldname is given, returns the suffixed fieldname.
     """
     language_code = _normalize_language_code(language_code or get_language()).split("-")[0]
-    return "{}_{}".format(fieldname or "", language_code)
+    return "{}_{}".format(field_name or fieldname or "", language_code)
 
 
 class DirectTemplateView(TemplateView):
