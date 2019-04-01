@@ -19,7 +19,7 @@ def downgrade(value):
     """
     Downgrade unicode to ascii, transliterating accented characters.
     """
-    value = force_text(value)
+    value = force_text(value or "")
     return codecs.encode(value, 'translit/long')
 
 
