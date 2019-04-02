@@ -1,3 +1,7 @@
+0.2.24 2019-03-18
+- SlugField: Leave empty slug if blank=True.
+- SlugField: Don't force None to "none" string.
+
 0.2.23 2019-03-18
 - lang_suffix: 'field_name' paramter instead of 'fieldname'.
 

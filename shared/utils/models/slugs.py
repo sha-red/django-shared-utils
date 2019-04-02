@@ -66,7 +66,7 @@ class AutoSlugField(django_fields.SlugField):
                     if callable(value):
                         value = value()
         value = self.slugify(value)
-        if not value:
+        if not value and not self.blank:
             value = model_instance._meta.model_name
         if self.unique_slug:
             # TODO Move import to top of file once AutoSlugField is removed from shared.utils.fields and we no longer have a circular import
