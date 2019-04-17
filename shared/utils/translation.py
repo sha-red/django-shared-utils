@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-# Erik Stein <code@classlibrary.net>, 2015
 
+from copy import copy
 import os
 from collections import OrderedDict
 from contextlib import contextmanager
@@ -16,7 +16,7 @@ from django.utils.http import is_safe_url
 from django.utils.six.moves.urllib.parse import urlsplit, urlunsplit
 from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.views.generic import TemplateView
-from django.views.i18n import LANGUAGE_QUERY_PARAMETER
+from django.views.i18n import LANGUAGE_QUERY_PARAMETER, set_language
 
 
 FALLBACK_LANGUAGE_CODE = getattr(settings, 'FALLBACK_LANGUAGE_CODE', 'en')
@@ -166,26 +166,28 @@ def active_language(lang='de'):
 def set_language_get(request):
     """
     set_language per GET request,
-    modified copy from django.views.i18n (django 1.9.x)
     """
-    next = request.POST.get('next', request.GET.get('next'))
-    if not is_safe_url(url=next, host=request.get_host()):
-        next = request.META.get('HTTP_REFERER')
-        if not is_safe_url(url=next, host=request.get_host()):
-            next = '/'
-    response = http.HttpResponseRedirect(next)
-    if request.method == 'GET':
-        lang_code = request.GET.get(LANGUAGE_QUERY_PARAMETER, None)
-        if lang_code and check_for_language(lang_code):
-            next_trans = translate_url(next, lang_code)
-            if next_trans != next:
-                response = http.HttpResponseRedirect(next_trans)
+    request = copy(request)
+    request.POST = request.GET
+    request.method = 'POST'
+    return set_language(request)
 
-            if hasattr(request, 'session'):
-                request.session[LANGUAGE_SESSION_KEY] = lang_code
-            else:
-                response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code,
-                                    max_age=settings.LANGUAGE_COOKIE_AGE,
-                                    path=settings.LANGUAGE_COOKIE_PATH,
-                                    domain=settings.LANGUAGE_COOKIE_DOMAIN)
-    return response
+
+class I18nUrlMixin(object):
+    """
+    View Mixin.
+    Makes the url pattern name available in the template context.
+
+    Usage:
+        class ViewClass(I18nUrlMixin, TemplateView):
+            ...
+
+        url(r'<your_pattern>', ViewClass.as_view(view_name='my-wonderful-view', name='my-wonderful-view'),
+    """
+    view_name = None
+
+    def get_context_data(self, **kwargs):
+        if 'view_name' not in kwargs and self.view_name:
+            kwargs['view_name'] = self.view_name
+        context = super().get_context_data(**kwargs)
+        return context
