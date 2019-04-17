@@ -46,7 +46,7 @@ translated_field = translate
 Unfinished:
 
 from django import template
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.urlresolvers import resolve
 from django.urls.base import translate_url
 
