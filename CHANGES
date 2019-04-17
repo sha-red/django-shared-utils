@@ -1,3 +1,7 @@
+0.2.25 2019-04-17
+- GET language switcher code generalized.
+- Import reverse from django.urls.
+
 0.2.24 2019-03-18
 - SlugField: Leave empty slug if blank=True.
 - SlugField: Don't force None to "none" string.
