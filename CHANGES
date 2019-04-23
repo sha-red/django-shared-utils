@@ -1,3 +1,7 @@
+0.2.26 2019-04-23
+- Updated template class ussage in I18nDirectTemplateView.
+- Removed (non-working) i18n_direct_to_template view function.
+
 0.2.25 2019-04-17
 - GET language switcher code generalized.
 - Import reverse from django.urls.
