@@ -3,20 +3,15 @@ from __future__ import unicode_literals
 
 from copy import copy
 import os
+
 from collections import OrderedDict
 from contextlib import contextmanager
-from django import http
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, FieldDoesNotExist
-from django.urls.base import translate_url
-from django.http import HttpResponseRedirect
 from django.template.loader import select_template
 from django.utils import translation
-from django.utils.http import is_safe_url
-from django.utils.six.moves.urllib.parse import urlsplit, urlunsplit
-from django.utils.translation import check_for_language, LANGUAGE_SESSION_KEY
 from django.views.generic import TemplateView
-from django.views.i18n import LANGUAGE_QUERY_PARAMETER, set_language
+from django.views.i18n import set_language
 
 
 FALLBACK_LANGUAGE_CODE = getattr(settings, 'FALLBACK_LANGUAGE_CODE', 'en')
@@ -84,8 +79,8 @@ class I18nDirectTemplateView(DirectTemplateView):
         return [template_name]
 
 
-def i18n_direct_to_template(request, *args, **kwargs):
-    return I18nDirectTemplateView(*args, **kwargs).as_view()
+        ])
+        return [template.template.name]
 
 
 def get_translation(obj, relation_name='translations', language_code=None):
