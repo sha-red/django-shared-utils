@@ -72,13 +72,9 @@ class I18nDirectTemplateView(DirectTemplateView):
     def get_template_names(self):
         t_name, t_ext = os.path.splitext(self.template_name)
         lang = translation.get_language()
-        template_name = select_template((
+        template = select_template([
             "%s.%s%s" % (t_name, lang, t_ext),
             self.template_name
-        )).name
-        return [template_name]
-
-
         ])
         return [template.template.name]
 
