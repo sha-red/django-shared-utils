@@ -47,8 +47,11 @@ class PageTitlesFunctionMixin(object):
             ''
         ))
 
-    def get_short_title(self):
-        return slimdown(self.name)
+    def get_short_name(self):
+        return slimdown(self.short_name or self.name)
+
+    # TODO Deprecated
+    get_short_title = get_short_name
 
     def get_window_title(self):
         return strip_tags(slimdown(

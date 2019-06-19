@@ -1,3 +1,6 @@
+0.2.27 2019-06-19
+- Deprecated get_short_title, use get_short_name.
+
 0.2.26 2019-04-23
 - Updated template class ussage in I18nDirectTemplateView.
 - Removed (non-working) i18n_direct_to_template view function.
