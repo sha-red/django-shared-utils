@@ -1,3 +1,6 @@
+0.2.28 2019-07-19
+- Fixed last of month calculation.
+
 0.2.27 2019-06-19
 - Deprecated get_short_title, use get_short_name.
 

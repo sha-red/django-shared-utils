@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..conf import USE_TRANSLATABLE_FIELDS
 from ..dateformat import format_partial_date, format_date_range
+from ..dates import get_last_of_month
 
 
 if USE_TRANSLATABLE_FIELDS:
@@ -42,8 +43,8 @@ class RuntimeBehaviour:
             setattr(self, self.start_date_field_name, MIN_DATE)
 
         if self.until_year_value:
-            setattr(self, self.end_date_field_name, datetime.date(
-                self.until_year_value, self.until_month_value or 12, self.until_day_value or 31))
+            d = datetime.date(self.until_year_value, self.until_month_value or 12, 1)
+            setattr(self, self.end_date_field_name, get_last_of_month(d))
         else:
             setattr(self, self.end_date_field_name, MAX_DATE)
 
