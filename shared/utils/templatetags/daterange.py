@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 # Erik Stein <code@classlibrary.net>, 2016-2017
 
+import datetime
 
 from django import template
 from django.conf import settings
@@ -55,3 +56,13 @@ def format_year_range(start_date, end_date, variant=DEFAULT_VARIANT):
 @register.simple_tag
 def format_partial_date(year=None, month=None, day=None, variant=DEFAULT_VARIANT):
     return dateformat.format_partial_date(year, month, day, variant=DEFAULT_VARIANT)
+
+
+@register.filter
+def is_past(_date):
+    return bool(_date < datetime.date.today())
+
+
+@register.filter
+def is_future(_date):
+    return bool(_date >= datetime.date.today())

@@ -1,3 +1,7 @@
+0.2.29 2019-09-05
+- is_past and is_future template filters.
+- LONG_DATE_FORMAT.
+
 0.2.28 2019-07-19
 - Fixed last of month calculation.
 
