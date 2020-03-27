@@ -55,6 +55,11 @@ def slimdown(text):
     return mark_safe(text_utils.slimdown(text))
 
 
+@register.filter(needs_autoescape=False)
+def strip_links(text):
+    return mark_safe(text_utils.strip_links(text))
+
+
 @register.filter(is_safe=True)
 @stringfilter
 def html_lines_to_list(value):
