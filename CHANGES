@@ -1,3 +1,6 @@
+0.2.30 2020-12-10
+- Use "transliterate" alias for "translit/long" codec (Python 3.9 codecs compatibility)
+
 0.2.29 2019-09-05
 - is_past and is_future template filters.
 - LONG_DATE_FORMAT.
@@ -31,7 +34,7 @@
 - Class based daterange views.
 
 0.2.20 2019-01-15
-- select_template filter. 
+- select_template filter.
 
 0.2.19 2019-01-31
 - Added switch_language_url template tag.
