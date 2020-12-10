@@ -1,5 +1,8 @@
-0.2.30 2020-12-10
+0.2.31 2020-12-10
 - Use "transliterate" alias for "translit/long" codec (Python 3.9 codecs compatibility)
+
+0.2.30 2020-03-27
+- Added strip_links template filter.
 
 0.2.29 2019-09-05
 - is_past and is_future template filters.
